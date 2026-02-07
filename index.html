@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propose Day ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ff8fa3;
+            --bg-color: #fff0f3;
+            --text-main: #590d22;
+            --paper-white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        /* --- BACKGROUND FLOATING HEARTS --- */
+        .bg-heart {
+            position: fixed;
+            color: rgba(255, 77, 109, 0.1);
+            font-size: 2rem;
+            animation: floatBackground 10s infinite linear;
+            z-index: -1;
+        }
+
+        /* --- SCREENS --- */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.8s ease;
+            padding: 20px;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.9);
+            z-index: -10;
+        }
+
+        /* --- LOCK SCREEN --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+            width: 90%;
+            max-width: 350px;
+        }
+
+        .pass-input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 2px solid #ffccd5;
+            text-align: center;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .pass-input:focus { border-color: var(--primary); }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .btn:active { transform: scale(0.95); }
+
+        /* --- PAGE 1: PHOTO & OPTIONS --- */
+        .photo-frame {
+            width: 280px;
+            height: 350px;
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: rotate(-3deg);
+            margin-bottom: 30px;
+            animation: float 6s ease-in-out infinite;
+            /* Flex center for alt text if image breaks */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            display: block;
+        }
+
+        /* Style for broken image text */
+        .photo-frame img[alt]:after {  
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f0f0;
+            font-family: 'Helvetica';
+            font-weight: 300;
+            line-height: 2;
+            text-align: center;
+            content: "Image Not Found :( \A check filename is image1.png";
+        }
+
+        .glow-btn {
+            background: white;
+            color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: 2px solid var(--primary);
+            font-weight: 600;
+            margin: 10px;
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
+            animation: glow 2s infinite alternate;
+            cursor: pointer;
+        }
+
+        /* --- PAGE 2: ENVELOPE --- */
+        .top-image-container {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+        
+        .top-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .envelope-container {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .envelope-container:active { transform: scale(0.9); }
+
+        .envelope {
+            width: 180px;
+            height: 120px;
+            background: var(--secondary);
+            position: relative;
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* The Flap */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 90px solid transparent;
+            border-right: 90px solid transparent;
+            border-top: 70px solid var(--primary);
+            transform-origin: top;
+            transition: transform 0.6s;
+            z-index: 5;
+        }
+
+        .envelope.open::before {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .heart-seal {
+            position: absolute;
+            top: -10px;
+            font-size: 2rem;
+            color: #d00000;
+            z-index: 6;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .envelope.open .heart-seal { display: none; }
+
+        .press-hint {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            text-transform: uppercase;
+        }
+
+        /* --- LETTER POPUP --- */
+        .letter-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .letter-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .paper {
+            background: var(--paper-white);
+            width: 85%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            position: relative;
+            max-height: 70vh;
+            overflow-y: auto; /* Allows scrolling */
+            transform: translateY(50px);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .letter-overlay.active .paper { transform: translateY(0); }
+
+        .letter-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            color: #000; /* Black Text as requested */
+            line-height: 1.8;
+            white-space: pre-wrap; /* Preserves structure */
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 4px;
+            background: var(--primary);
+            position: absolute;
+            top: 0; left: 0;
+            transition: width 0.1s;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--primary); } to { box-shadow: 0 0 20px var(--primary); } }
+        @keyframes float { 0%, 100% { transform: rotate(-3deg) translateY(0); } 50% { transform: rotate(-3deg) translateY(-10px); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .shake { animation: shake 0.3s ease-in-out; border-color: red !important; }
+
+        /* Custom Scrollbar for Letter */
+        .paper::-webkit-scrollbar { width: 6px; }
+        .paper::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="heartsContainer"></div>
+
+    <div id="lockScreen" class="screen">
+        <div class="glass-panel">
+            <h2 style="margin-bottom:10px;">Propose Day 🔒</h2>
+            <p style="font-size:0.8rem; margin-bottom:15px;">Password is the feeling.</p>
+            <input type="text" id="passInput" class="pass-input" placeholder="Enter Password">
+            <button class="btn" onclick="checkPass()">Unlock</button>
+        </div>
+    </div>
+
+    <div id="page1" class="screen hidden">
+        <div class="photo-frame">
+            <img src="image1.png" alt="Check filename is image1.png" onerror="this.style.display='none'; this.parentElement.innerText='❌ Image 1 Missing. Check filename in GitHub!';">
+        </div>
+        <h2 style="margin-bottom: 20px; font-weight: 600;">Aj pata hai kya hai ? 🤔</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+            <button class="glow-btn" onclick="goToPage2()">bilkul 🫠</button>
+            <button class="glow-btn" onclick="goToPage2()">yes baby 💗</button>
+        </div>
+    </div>
+
+    <div id="page2" class="screen hidden">
+        <div class="top-image-container">
+            <img src="image2.jpg" alt="Check filename is image2.jpg" onerror="this.style.display='none'; this.parentElement.innerText='❌ Image 2 Missing. Check filename in GitHub!';">
+        </div>
+
+        <div class="envelope-container" id="envelopeArea">
+            <div class="envelope" id="envelope">
+                <div class="heart-seal">❤️</div>
+            </div>
+            <div style="width: 180px; height: 5px; background: #eee; margin-top: 10px; border-radius: 5px; overflow: hidden;">
+                <div id="pressProgress" style="width: 0%; height: 100%; background: #ff4d6d;"></div>
+            </div>
+        </div>
+        <p class="press-hint">Long press to open</p>
+    </div>
+
+    <div id="letterModal" class="letter-overlay">
+        <div class="paper">
+            <p id="typewriterText" class="letter-text"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const correctPass = "iloveyou❤️";
+        const message = "Abhi tak to apko pata chal hi gya hoga ki aj propose day hai 🤭 to aj main firse apko thora mere pyar mein padhke ki anurodh karna chahta hu ya simply propose karna chahta hu 🫠 to meri pyari cutu, main apse bht bht pyar karta hu, ap meri sapno ki rani jaisi ho 😘 to mai chahta hu ap mere pyar mein par jao 😭❤️ would u accept me ?? Yes or no - answer wp mein bhej dena 🧿💗";
+
+        // --- PASSWORD LOGIC ---
+        function checkPass() {
+            const input = document.getElementById('passInput');
+            if(input.value.trim() === correctPass) {
+                document.getElementById('lockScreen').classList.add('hidden');
+                document.getElementById('page1').classList.remove('hidden');
+            } else {
+                input.classList.add('shake');
+                setTimeout(()=> input.classList.remove('shake'), 300);
+            }
+        }
+
+        // --- PAGE 1 -> 2 & MUSIC START ---
+        function goToPage2() {
+            const audio = document.getElementById('bgMusic');
+            audio.volume = 0.6;
+            // Trying to play music on interaction
+            audio.play().catch(e => console.log("Audio waiting for interaction"));
+
+            document.getElementById('page1').classList.add('hidden');
+            document.getElementById('page2').classList.remove('hidden');
+        }
+
+        // --- LONG PRESS LOGIC ---
+        let pressTimer;
+        let pressDuration = 1000; // 1 second
+        let startTime;
+        let animationFrame;
+        const envelopeArea = document.getElementById('envelopeArea');
+        const envelope = document.getElementById('envelope');
+        const progressBar = document.getElementById('pressProgress');
+
+        // Touch Start
+        envelopeArea.addEventListener('touchstart', startPress);
+        envelopeArea.addEventListener('mousedown', startPress);
+
+        // Touch End
+        envelopeArea.addEventListener('touchend', cancelPress);
+        envelopeArea.addEventListener('mouseup', cancelPress);
+        envelopeArea.addEventListener('mouseleave', cancelPress);
+
+        function startPress(e) {
+            e.preventDefault(); // Prevent standard click
+            startTime = Date.now();
+            envelope.style.transform = "scale(0.95)";
+            
+            // Start Progress Animation
+            function updateProgress() {
+                let elapsed = Date.now() - startTime;
+                let percent = (elapsed / pressDuration) * 100;
+                progressBar.style.width = Math.min(percent, 100) + "%";
+
+                if (elapsed < pressDuration) {
+                    animationFrame = requestAnimationFrame(updateProgress);
+                } else {
+                    // Success!
+                    openEnvelope();
+                }
+            }
+            animationFrame = requestAnimationFrame(updateProgress);
+        }
+
+        function cancelPress() {
+            cancelAnimationFrame(animationFrame);
+            progressBar.style.width = "0%";
+            envelope.style.transform = "scale(1)";
+        }
+
+        function openEnvelope() {
+            // Cancel events to prevent double firing
+            envelopeArea.removeEventListener('touchstart', startPress);
+            envelopeArea.removeEventListener('mousedown', startPress);
+            
+            envelope.classList.add('open');
+            
+            // Wait for flap animation then show letter
+            setTimeout(() => {
+                document.getElementById('letterModal').classList.add('active');
+                startTypewriter();
+            }, 800);
+        }
+
+        // --- TYPEWRITER ---
+        function startTypewriter() {
+            const target = document.getElementById('typewriterText');
+            let i = 0;
+            target.innerHTML = "";
+            
+            function type() {
+                if (i < message.length) {
+                    target.innerHTML += message.charAt(i);
+                    i++;
+                    
+                    // Auto scroll to bottom while typing
+                    const paper = document.querySelector('.paper');
+                    paper.scrollTop = paper.scrollHeight;
+                    
+                    setTimeout(type, 50); // Speed of typing
+                }
+            }
+            type();
+        }
+
+        // --- BACKGROUND HEARTS ---
+        function createHearts() {
+            const container = document.getElementById('heartsContainer');
+            for(let i=0; i<20; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.classList.add('bg-heart');
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                heart.style.fontSize = (Math.random() * 1 + 1) + 'rem';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+    </script>
+</body>
+</html>
